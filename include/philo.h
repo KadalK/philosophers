@@ -34,16 +34,15 @@ typedef struct s_data
 	long	start_time;
 	bool	start;
 
+	pthread_mutex_t	print_mutex;
 	pthread_mutex_t	*forks;
-
-
-
 	struct	s_philo *philos;
 } t_data;
 
 typedef struct s_philo
 {
 	int				id;
+	pthread_mutex_t meal_mutex;
 	long			last_meal;
 	int				meals_eaten;
 	pthread_t		thread;

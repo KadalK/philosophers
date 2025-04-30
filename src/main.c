@@ -28,9 +28,15 @@ int check_death(t_data *data)
 	long current_time = get_timestamp_in_ms();
 	while (i < data->nb_philo)
 	{
-		if ((current_time - data->philos->last_meal) >= data->time_to_die)
+		if ((current_time - data->philos[i].last_meal) == data->time_to_die)
 		{
-			printf("time of death : %ld | Philo number : %d died.\n", current_time, data->philos[i].id);
+			printf("Jai faim ! | Philo number : %d died.\n", data->philos[i].id);
+		}
+		if ((current_time - data->philos[i].last_meal) >= data->time_to_die)
+		{
+			pthread_mutex_lock(&data->print_mutex);
+			printf("time of death : %ld | Philo number : %d died.\n", current_time , data->philos[i].id);
+			pthread_mutex_unlock(&data->print_mutex);
 			return (1);
 		}
 		i++;
@@ -38,33 +44,45 @@ int check_death(t_data *data)
 	return (0);
 }
 
-void	big_brother(t_data *data)
+void	*big_brother(void *arg)
 {
+	t_data *data;
+	data = (void *)arg;
 	while(data->doomsday != true)
 	{
-		if(check_death(data) == 1)
+		if (check_death(data) == 1)
+		{
 			data->doomsday = true;
-		usleep(1000);
+		}
 	}
+	return (NULL);
 }
 
 void	*routine(void *arg)
 {
-	t_philo *philo = (t_philo *)arg;
+	t_philo *philo;
 
-	printf("Le philo %d dit : NTM.\n", philo->id);
+	philo = (t_philo *)arg;
+	pthread_mutex_lock(&philo->meal_mutex);
 	philo->last_meal = get_timestamp_in_ms();
-	usleep(10000);
+	pthread_mutex_unlock(&philo->meal_mutex);
+	while (philo->data->doomsday != true)
+	{
+		printf("Le philo %d dit : NTM.\n", philo->id);
+		philo->last_meal = get_timestamp_in_ms();
+	}
 	return (NULL);
 }
 
 bool	thread_creat_n_join(t_data *data, pthread_t *thread)
 {
 	int i;
+	pthread_t supervisor;
 
 	i = 0;
 	while (i < data->nb_philo)
 	{
+		printf("DEBUG %d\n", i);
 		if (pthread_create(&thread[i], NULL, routine, &data->philos[i]) != 0)
 		{
 			perror("creat pthread failed\n");
@@ -72,6 +90,11 @@ bool	thread_creat_n_join(t_data *data, pthread_t *thread)
 		}
 		i++;
 	}
+		if (pthread_create(&supervisor, NULL, big_brother, data) != 0)
+		{
+			perror("creat supervisor failed\n");
+			return (false);
+		}
 	i = 0;
 	while ( i < data->nb_philo)
 	{
@@ -81,6 +104,11 @@ bool	thread_creat_n_join(t_data *data, pthread_t *thread)
 			return (false);
 		}
 		i++;
+	}
+	if (pthread_join(supervisor, NULL) != 0)
+	{
+		perror("join supervisor failed\n");
+		return (false);
 	}
 	return (true);
 }
