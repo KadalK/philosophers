@@ -12,33 +12,29 @@
 
 #include "../include/philo.h"
 
-long get_timestamp_in_ms(void)
-{
-	struct timeval tv;
-
-	gettimeofday(&tv, NULL);
-	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
-}
-
 int check_death(t_data *data)
 {
-	int	i;
+	int		i;
+	long	current_time;
+	const long time_to_die = data->time_to_die;
 
 	i = 0;
-	long current_time = get_timestamp_in_ms();
+	current_time = get_timestamp_in_ms();
 	while (i < data->nb_philo)
 	{
-		if ((current_time - data->philos[i].last_meal) == data->time_to_die)
+		pthread_mutex_lock(&data->philos[i].meal_mutex);
+		if ((current_time - data->philos[i].last_meal) >= time_to_die)
 		{
-			printf("Jai faim ! | Philo number : %d died.\n", data->philos[i].id);
-		}
-		if ((current_time - data->philos[i].last_meal) >= data->time_to_die)
-		{
-			pthread_mutex_lock(&data->print_mutex);
-			printf("time of death : %ld | Philo number : %d died.\n", current_time , data->philos[i].id);
-			pthread_mutex_unlock(&data->print_mutex);
+//			printf("%ld ta grand mere\n", data->philos[i].last_meal);
+			print_mutex(&data->philos[i], "died");
+			pthread_mutex_unlock(&data->philos[i].meal_mutex);
+
+			pthread_mutex_lock(&data->doomsday_mutex);
+			data->doomsday = true;
+			pthread_mutex_unlock(&data->doomsday_mutex);
 			return (1);
 		}
+		pthread_mutex_unlock(&data->philos[i].meal_mutex);
 		i++;
 	}
 	return (0);
@@ -48,68 +44,52 @@ void	*big_brother(void *arg)
 {
 	t_data *data;
 	data = (void *)arg;
-	while(data->doomsday != true)
+	while(!get_doomsday(data))
 	{
 		if (check_death(data) == 1)
 		{
+			pthread_mutex_lock(&data->doomsday_mutex);
 			data->doomsday = true;
+			pthread_mutex_unlock(&data->doomsday_mutex);
 		}
+		usleep(50);
 	}
 	return (NULL);
 }
 
-void	*routine(void *arg)
+bool	get_doomsday(t_data *data)
 {
-	t_philo *philo;
-
-	philo = (t_philo *)arg;
-	pthread_mutex_lock(&philo->meal_mutex);
-	philo->last_meal = get_timestamp_in_ms();
-	pthread_mutex_unlock(&philo->meal_mutex);
-	while (philo->data->doomsday != true)
-	{
-		printf("Le philo %d dit : NTM.\n", philo->id);
-		philo->last_meal = get_timestamp_in_ms();
-	}
-	return (NULL);
+	bool	value;
+	pthread_mutex_lock(&data->doomsday_mutex);
+	value = data->doomsday;
+	pthread_mutex_unlock(&data->doomsday_mutex);
+	return (value);
 }
 
 bool	thread_creat_n_join(t_data *data, pthread_t *thread)
 {
-	int i;
-	pthread_t supervisor;
+	int			i;
+	pthread_t	supervisor;
 
 	i = 0;
 	while (i < data->nb_philo)
 	{
-		printf("DEBUG %d\n", i);
+//		printf("DEBUG %d\n", i);
 		if (pthread_create(&thread[i], NULL, routine, &data->philos[i]) != 0)
-		{
-			perror("creat pthread failed\n");
 			return (false);
-		}
 		i++;
 	}
 		if (pthread_create(&supervisor, NULL, big_brother, data) != 0)
-		{
-			perror("creat supervisor failed\n");
 			return (false);
-		}
 	i = 0;
 	while ( i < data->nb_philo)
 	{
 		if (pthread_join(thread[i], NULL) != 0)
-		{
-			perror("join pthread failed\n");
 			return (false);
-		}
 		i++;
 	}
 	if (pthread_join(supervisor, NULL) != 0)
-	{
-		perror("join supervisor failed\n");
 		return (false);
-	}
 	return (true);
 }
 
@@ -137,7 +117,8 @@ int main(int ac, char **av)
 		return (1);
 	if (!init(&data, av))
 		return(1);
-	printf("DEBUG nb_philo = %d\n", data->nb_philo);
+//	printf("DEBUG nb_philo = %d\n", data->nb_philo);
 	thread_creator(data);
+	free_init(data);
 	return (0);
 }

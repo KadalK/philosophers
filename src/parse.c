@@ -12,16 +12,22 @@
 
 #include "../include/philo.h"
 
+void	error_msg(void)
+{
+	ft_putendl_fd("usage: <number_of_philosophers> <time_to_die> "
+		"<time_to_eat> <time_to_sleep> "
+		"[number_of_times_each_philosopher_must_eat]", 2);
+}
+
 int	valid_args(int ac, char **av)
 {
 	int	x;
 	int	y;
 
 	x = 1;
-	if (ac != 5)
+	if (ac < 5 || ac > 6)
 	{
-		printf("ERROR :\nPut <number_of_philosophers>, <time_to_die>, "
-			   "<time_to_eat>, <time_to_sleep>\n");
+		error_msg();
 		return (-1);
 	}
 	while (av[x])
@@ -29,9 +35,9 @@ int	valid_args(int ac, char **av)
 		y = 0;
 		while (av[x][y])
 		{
-			if (ft_atol(&av[x][y]) < 0)
+			if (ft_isalpha(av[x][y]) || ft_atol(av[x]) <= 0)
 			{
-				printf("ERROR :\nOnly positive numbers allowed.\n");
+				ft_putendl_fd("ERROR:\nOnly positive numbers allowed.", 2);
 				return (-1);
 			}
 			y++;

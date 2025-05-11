@@ -40,9 +40,22 @@ int	ft_atoi(const char *nptr)
 	return ((int)ft_atol(nptr));
 }
 
-int	ft_isdigit(int c)
+void	ft_putendl_fd(char *s, int fd)
 {
-	if (c >= '0' && c <= '9')
+	int i;
+
+	i = 0;
+	while (s[i])
+	{
+		write(fd, &s[i], 1);
+		i++;
+	}
+	write(fd, "\n", 2);
+}
+
+int	ft_isalpha(int c)
+{
+	if ((c >= 'a' && c <= 'z' )||( c >= 'A' && c <= 'Z'))
 		return (1);
 	return (0);
 }

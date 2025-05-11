@@ -10,6 +10,9 @@ SRC_FILES =	main.c \
 			minilib.c \
 			parse.c	\
 			init.c	\
+			eat.c	\
+			routine.c	\
+			utils.c	\
 
 OBJS = $(addprefix $(OBJ_DIR), $(SRC_FILES:.c=.o))
 
@@ -26,7 +29,6 @@ $(OBJ_DIR):
 
 clean:
 	@rm -rf $(OBJ_DIR)
-	@$(MAKE) clean --silent -C
 	@echo "It's cleaned !"
 
 fclean: clean

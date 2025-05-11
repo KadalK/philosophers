@@ -22,6 +22,11 @@
 # include <sys/time.h>
 # include <string.h>
 
+# define DEAD "KK"
+# define EAT "is eating----------------------"
+# define TAKEN "has taken a fork"
+# define YELLOW "\033[093m"
+# define RESET "\033[039m"
 
 typedef struct s_data
 {
@@ -34,33 +39,62 @@ typedef struct s_data
 	long	start_time;
 	bool	start;
 
+	pthread_mutex_t	doomsday_mutex;
 	pthread_mutex_t	print_mutex;
-	pthread_mutex_t	*forks;
-	struct	s_philo *philos;
-} t_data;
+	pthread_mutex_t	sleep_mutex;
+
+	struct	s_philo	*philos;
+	struct s_fork	*forks;
+}	t_data;
 
 typedef struct s_philo
 {
 	int				id;
-	pthread_mutex_t meal_mutex;
 	long			last_meal;
 	int				meals_eaten;
+
+	struct s_fork	*l_fork;
+	struct s_fork	*r_fork;
+
 	pthread_t		thread;
-	pthread_mutex_t	*left_fork;
-	pthread_mutex_t	*right_fork;
+	pthread_mutex_t	meal_mutex;
+
 	t_data			*data;
 }			t_philo;
+
+typedef struct s_fork
+{
+	bool			available;
+	pthread_mutex_t	fork;
+}			t_fork;
+
+//----not define---//
+bool	get_doomsday(t_data *data);
+int check_death(t_data *data);
+
+//----routine.c----//
+void	*routine(void *arg);
+void	*big_brother(void *arg);
+
+//----utils.c----//
+long get_timestamp_in_ms(void);
+void print_mutex(t_philo *philo, char *msg);
 
 //----minilib.c----//
 int		ft_atoi(const char *nptr);
 long	ft_atol(const char *str);
 int		ft_isdigit(int c);
+int	ft_isalpha(int c);
+void	ft_putendl_fd(char *s, int fd);
 
 //----parse.c----//
 int	valid_args(int ac, char **av);
 
 //----init.c----//
 bool	init(t_data **data, char **av);
+void	free_init(t_data *data);
 
+//----eat.c----//
+void	eat(t_philo *philo);
 
 #endif
