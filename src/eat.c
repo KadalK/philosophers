@@ -49,7 +49,6 @@ void	take_fork(t_philo *philo, t_fork *fork_1, t_fork *fork_2)
 			usleep(philo->data->time_to_eat);
 			release_fork(fork_2);
 			release_fork(fork_1);
-			//TODO mutex meal
 			philo->meals_eaten++;
 		}
 		release_fork(fork_1);

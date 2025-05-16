@@ -23,7 +23,9 @@
 # include <string.h>
 
 # define DEAD "KK"
-# define EAT "is eating----------------------"
+# define THINK "is thinking"
+# define SLEEP "is sleeping"
+# define EAT "is eating"
 # define TAKEN "has taken a fork"
 # define YELLOW "\033[093m"
 # define RESET "\033[039m"

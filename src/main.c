@@ -46,6 +46,12 @@ void	*big_brother(void *arg)
 	data = (void *)arg;
 	while(!get_doomsday(data))
 	{
+		if (data->must_eat == data->philos->meals_eaten / data->nb_philo)
+		{
+			pthread_mutex_lock(&data->doomsday_mutex);
+			data->doomsday = true;
+			pthread_mutex_unlock(&data->doomsday_mutex);
+		}
 		if (check_death(data) == 1)
 		{
 			pthread_mutex_lock(&data->doomsday_mutex);

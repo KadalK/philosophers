@@ -25,13 +25,15 @@ void	smart_sleep(t_data *data, long duration)
 
 void	sleep_phase(t_philo *philo)
 {
-	print_mutex(philo, "is sleeping");
-	smart_sleep(philo->data, philo->data->time_to_sleep);
+
+	const long time_to_sleep = philo->data->time_to_sleep;
+	smart_sleep(philo->data, time_to_sleep);
+	print_mutex(philo, SLEEP);
 }
 
 void	think_phase(t_philo *philo)
 {
-	print_mutex(philo, "is thinking");
+	print_mutex(philo, THINK);
 }
 
 void	*routine(void *arg)
@@ -39,8 +41,6 @@ void	*routine(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-
-	philo->last_meal = get_timestamp_in_ms();
 	while (!get_doomsday(philo->data))
 	{
 		eat(philo);
