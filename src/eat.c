@@ -14,17 +14,17 @@
 
 bool	set_fork(t_fork *fork)
 {
-	bool succes;
+	bool success;
 
-	succes = false;
+	success = false;
 	pthread_mutex_lock(&fork->fork);
 	if (fork->available)
 	{
 		fork->available = false;
-		succes = true;
+		success = true;
 	}
 	pthread_mutex_unlock(&fork->fork);
-	return (succes);
+	return (success);
 }
 
 void	release_fork(t_fork *fork)
@@ -38,19 +38,19 @@ void	take_fork(t_philo *philo, t_fork *fork_1, t_fork *fork_2)
 {
 	if (set_fork(fork_1))
 	{
-//		printf("fork 1 = %p\n", fork_1);
 		print_mutex(philo, TAKEN);
 		if (set_fork(fork_2))
 		{
-//			printf("fork 2 = %p\n", fork_2);
-			print_mutex(philo, TAKEN);
 			pthread_mutex_lock(&philo->meal_mutex);
 			philo->last_meal = get_timestamp_in_ms();
 			pthread_mutex_unlock(&philo->meal_mutex);
+			print_mutex(philo, TAKEN);
 			print_mutex(philo, EAT);
-			usleep(philo->data->time_to_eat * 1000);
+			usleep(philo->data->time_to_eat);
 			release_fork(fork_2);
 			release_fork(fork_1);
+			//TODO mutex meal
+			philo->meals_eaten++;
 		}
 		release_fork(fork_1);
 	}
@@ -60,12 +60,12 @@ void	eat(t_philo *philo)
 {
 	if (philo->id % 2 == 0)
 	{
-		printf("pipi\n");
-		take_fork(philo, philo->l_fork, philo->r_fork);
+		take_fork(philo, philo->r_fork, philo->l_fork);
 	}
 	else
 	{
-		printf("popo\n");
-		take_fork(philo, philo->r_fork, philo->l_fork);
+		take_fork(philo, philo->l_fork, philo->r_fork);
 	}
+
+	usleep(50);
 }
