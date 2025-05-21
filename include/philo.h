@@ -22,7 +22,7 @@
 # include <sys/time.h>
 # include <string.h>
 
-# define DEAD "KK"
+# define DEAD "is dead"
 # define THINK "is thinking"
 # define SLEEP "is sleeping"
 # define EAT "is eating"
@@ -70,6 +70,9 @@ typedef struct s_fork
 	pthread_mutex_t	fork;
 }			t_fork;
 
+
+
+
 //----not define---//
 bool	get_doomsday(t_data *data);
 int check_death(t_data *data);
@@ -81,6 +84,9 @@ void	*big_brother(void *arg);
 //----utils.c----//
 long get_timestamp_in_ms(void);
 void print_mutex(t_philo *philo, char *msg);
+void smart_sleep(long time, t_data *data);
+int	check_death(t_data *data);
+void	release_fork(t_fork *fork);
 
 //----minilib.c----//
 int		ft_atoi(const char *nptr);
@@ -98,5 +104,6 @@ void	free_init(t_data *data);
 
 //----eat.c----//
 void	eat(t_philo *philo);
+bool all_philos_meal_eaten(t_data *data);
 
 #endif

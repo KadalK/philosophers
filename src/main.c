@@ -12,53 +12,20 @@
 
 #include "../include/philo.h"
 
-int check_death(t_data *data)
-{
-	int		i;
-	long	current_time;
-	const long time_to_die = data->time_to_die;
-
-	i = 0;
-	current_time = get_timestamp_in_ms();
-	while (i < data->nb_philo)
-	{
-		pthread_mutex_lock(&data->philos[i].meal_mutex);
-		if ((current_time - data->philos[i].last_meal) >= time_to_die)
-		{
-//			printf("%ld ta grand mere\n", data->philos[i].last_meal);
-			print_mutex(&data->philos[i], "died");
-			pthread_mutex_unlock(&data->philos[i].meal_mutex);
-
-			pthread_mutex_lock(&data->doomsday_mutex);
-			data->doomsday = true;
-			pthread_mutex_unlock(&data->doomsday_mutex);
-			return (1);
-		}
-		pthread_mutex_unlock(&data->philos[i].meal_mutex);
-		i++;
-	}
-	return (0);
-}
-
 void	*big_brother(void *arg)
 {
-	t_data *data;
+	t_data	*data;
+
 	data = (void *)arg;
-	while(!get_doomsday(data))
+	while (!get_doomsday(data))
 	{
-		if (data->must_eat == data->philos->meals_eaten / data->nb_philo)
+		if (check_death(data) == 1 || all_philos_meal_eaten(data))
 		{
 			pthread_mutex_lock(&data->doomsday_mutex);
 			data->doomsday = true;
 			pthread_mutex_unlock(&data->doomsday_mutex);
+			break ;
 		}
-		if (check_death(data) == 1)
-		{
-			pthread_mutex_lock(&data->doomsday_mutex);
-			data->doomsday = true;
-			pthread_mutex_unlock(&data->doomsday_mutex);
-		}
-		usleep(50);
 	}
 	return (NULL);
 }
@@ -66,6 +33,7 @@ void	*big_brother(void *arg)
 bool	get_doomsday(t_data *data)
 {
 	bool	value;
+
 	pthread_mutex_lock(&data->doomsday_mutex);
 	value = data->doomsday;
 	pthread_mutex_unlock(&data->doomsday_mutex);
@@ -80,15 +48,14 @@ bool	thread_creat_n_join(t_data *data, pthread_t *thread)
 	i = 0;
 	while (i < data->nb_philo)
 	{
-//		printf("DEBUG %d\n", i);
 		if (pthread_create(&thread[i], NULL, routine, &data->philos[i]) != 0)
 			return (false);
 		i++;
 	}
-		if (pthread_create(&supervisor, NULL, big_brother, data) != 0)
-			return (false);
+	if (pthread_create(&supervisor, NULL, big_brother, data) != 0)
+		return (false);
 	i = 0;
-	while ( i < data->nb_philo)
+	while (i < data->nb_philo)
 	{
 		if (pthread_join(thread[i], NULL) != 0)
 			return (false);
@@ -101,7 +68,7 @@ bool	thread_creat_n_join(t_data *data, pthread_t *thread)
 
 bool	thread_creator(t_data *data)
 {
-	pthread_t *thread;
+	pthread_t	*thread;
 
 	thread = malloc(sizeof(pthread_t) * data->nb_philo);
 	if (!thread)
@@ -115,15 +82,29 @@ bool	thread_creator(t_data *data)
 	return (true);
 }
 
-int main(int ac, char **av)
+bool	lonely_philo(t_data *data)
 {
-	t_data *data;
+	if (data->nb_philo == 1)
+	{
+		printf("%d 1 %s\n", 0, TAKEN);
+		usleep(data->time_to_die * 1000);
+		printf("%ld 1 %s\n", data->time_to_die, DEAD);
+		free_init(data);
+		return (1);
+	}
+	return (0);
+}
 
-	if (valid_args(ac, av) == - 1)
+int	main(int ac, char **av)
+{
+	t_data	*data;
+
+	if (valid_args(ac, av) == -1)
 		return (1);
 	if (!init(&data, av))
-		return(1);
-//	printf("DEBUG nb_philo = %d\n", data->nb_philo);
+		return (1);
+	if(lonely_philo(data))
+		return (0);
 	thread_creator(data);
 	free_init(data);
 	return (0);

@@ -47,7 +47,6 @@ static	bool	data_init(t_data *data)
 		data->philos[i].r_fork = &data->forks[(i + 1) % data->nb_philo];
 		data->philos[i].l_fork->available = true;
 		data->philos[i].r_fork->available = true;
-
 		pthread_mutex_init(&data->philos[i].meal_mutex, NULL);
 		i++;
 	}
@@ -75,13 +74,10 @@ bool	init(t_data **data, char **av)
 	if (!*data)
 		return (false);
 	memset(*data, 0, sizeof(t_data));
-
 	args_init(*data, av);
 	if (!data_init(*data))
 		return (false);
-
 	mutex_init(*data);
-
 	return (true);
 }
 
