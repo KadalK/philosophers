@@ -23,25 +23,26 @@ long	get_timestamp_in_ms(void)
 int	check_death(t_data *data)
 {
 	int			i;
-	long		current_time;
+	long		current;
 	const long	time_to_die = data->time_to_die;
+	long		last_eat;
+	const long	start = data->start_time;
 
 	i = 0;
-	current_time = get_timestamp_in_ms();
 	while (i < data->nb_philo)
 	{
+		current = get_timestamp_in_ms();
 		pthread_mutex_lock(&data->philos[i].meal_mutex);
-		if ((current_time - data->philos[i].last_meal) >= time_to_die)
+		last_eat = (current - data->philos[i].last_meal);
+		pthread_mutex_unlock(&data->philos[i].meal_mutex);
+		if (last_eat >= time_to_die)
 		{
-			print_mutex(&data->philos[i], "died");
-			pthread_mutex_unlock(&data->philos[i].meal_mutex);
-			pthread_mutex_lock(&data->doomsday_mutex);
-			data->doomsday = true;
-			pthread_mutex_unlock(&data->doomsday_mutex);
+			set_doomsday(data, true);
+			pthread_mutex_lock(&data->print_mutex);
+			printf("%ld %d %s\n", current - start, data->philos[i].id, DEAD);
+			pthread_mutex_unlock(&data->print_mutex);
 			return (1);
 		}
-		usleep(1000);
-		pthread_mutex_unlock(&data->philos[i].meal_mutex);
 		i++;
 	}
 	return (0);

@@ -13,6 +13,7 @@ SRC_FILES =	main.c \
 			eat.c	\
 			routine.c	\
 			utils.c	\
+			ato.c	\
 
 OBJS = $(addprefix $(OBJ_DIR), $(SRC_FILES:.c=.o))
 

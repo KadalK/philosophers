@@ -6,7 +6,7 @@
 /*   By: kapinarc <kapinarc@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 20:12:40 by kapinarc          #+#    #+#             */
-/*   Updated: 2025/04/25 20:20:30 by kapinarc         ###   ########.fr       */
+/*   Updated: 2025/05/23 17:45:57 by kapinarc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,10 @@ typedef struct s_fork
 	pthread_mutex_t	fork;
 }			t_fork;
 
+//----ato.c----//
+long	ft_atol(const char *str);
+int		ft_atoi(const char *nptr);
+
 //----eat.c----//
 bool	all_philos_meal_eaten(t_data *data);
 bool	set_fork(t_fork *fork);
@@ -83,14 +87,15 @@ void	free_init(t_data *data);
 
 //----main.c----//
 bool	get_doomsday(t_data *data);
+void	set_doomsday(t_data *data, bool value);
 bool	thread_creat_n_join(t_data *data, pthread_t *thread);
 bool	thread_creator(t_data *data);
 
 //----minilib.c----//
-long	ft_atol(const char *str);
-int		ft_atoi(const char *nptr);
+int		ft_strlen(char *str);
 void	ft_putendl_fd(char *s, int fd);
-int		ft_isalpha(int c);
+int		ft_isdigit(int c);
+int		ft_strncmp(const char *s1, const char *s2, size_t n);
 
 //----parse.c----//
 void	error_msg(int mode);
@@ -107,7 +112,6 @@ void	*routine(void *arg);
 long	get_timestamp_in_ms(void);
 int		check_death(t_data *data);
 void	print_mutex(t_philo *philo, char *msg);
-void	release_fork(t_fork *fork);
 void	smart_usleep(long time, t_data *data);
 
 #endif

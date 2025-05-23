@@ -22,6 +22,13 @@ bool	get_doomsday(t_data *data)
 	return (value);
 }
 
+void	set_doomsday(t_data *data, bool value)
+{
+	pthread_mutex_lock(&data->doomsday_mutex);
+	data->doomsday = value;
+	pthread_mutex_unlock(&data->doomsday_mutex);
+}
+
 bool	thread_creat_n_join(t_data *data, pthread_t *thread)
 {
 	int			i;

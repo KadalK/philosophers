@@ -21,9 +21,7 @@ void	*big_brother(void *arg)
 	{
 		if (check_death(data) == 1 || all_philos_meal_eaten(data))
 		{
-			pthread_mutex_lock(&data->doomsday_mutex);
-			data->doomsday = true;
-			pthread_mutex_unlock(&data->doomsday_mutex);
+			set_doomsday(data, true);
 			break ;
 		}
 	}
