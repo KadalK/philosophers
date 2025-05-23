@@ -12,6 +12,14 @@
 
 #include "../include/philo.h"
 
+long	get_timestamp_in_ms(void)
+{
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+}
+
 int	check_death(t_data *data)
 {
 	int			i;
@@ -39,22 +47,20 @@ int	check_death(t_data *data)
 	return (0);
 }
 
-void	release_fork(t_fork *fork)
+void	smart_usleep(long time, t_data *data)
 {
-	pthread_mutex_lock(&fork->fork);
-	fork->available = true;
-	pthread_mutex_unlock(&fork->fork);
+	long	start;
+
+	start = get_timestamp_in_ms();
+	while (!get_doomsday(data))
+	{
+		if (get_timestamp_in_ms() - start >= time)
+			break ;
+		usleep(100);
+	}
 }
 
-long get_timestamp_in_ms(void)
-{
-	struct timeval tv;
-
-	gettimeofday(&tv, NULL);
-	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
-}
-
-void print_mutex(t_philo *philo, char *msg)
+void	print_mutex(t_philo *philo, char *msg)
 {
 	long	current_time;
 	long	elapsed_time;
@@ -63,9 +69,8 @@ void print_mutex(t_philo *philo, char *msg)
 	{
 		current_time = get_timestamp_in_ms();
 		elapsed_time = current_time - philo->data->start_time;
-
 		pthread_mutex_lock(&philo->data->print_mutex);
-		printf( "%ld %d %s\n", elapsed_time,  philo->id, msg);
+		printf("%ld %d %s\n", elapsed_time, philo->id, msg);
 		pthread_mutex_unlock(&philo->data->print_mutex);
 	}
 }

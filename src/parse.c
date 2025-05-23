@@ -12,11 +12,19 @@
 
 #include "../include/philo.h"
 
-void	error_msg(void)
+void	error_msg(int mode)
 {
-	ft_putendl_fd("usage: <number_of_philosophers> <time_to_die> "
-		"<time_to_eat> <time_to_sleep> "
-		"[number_of_times_each_philosopher_must_eat]", 2);
+	if (mode == 1)
+	{
+		ft_putendl_fd("usage: <number_of_philosophers> <time_to_die> "
+			"<time_to_eat> <time_to_sleep> "
+			"[number_of_times_each_philosopher_must_eat]", 2);
+	}
+	else if (mode == 2)
+	{
+		ft_putendl_fd("ERROR:\nDo not set the value too high or "
+			"negativ one.", 2);
+	}
 }
 
 int	valid_args(int ac, char **av)
@@ -27,7 +35,7 @@ int	valid_args(int ac, char **av)
 	x = 1;
 	if (ac < 5 || ac > 6)
 	{
-		error_msg();
+		error_msg(1);
 		return (-1);
 	}
 	while (av[x])
@@ -37,7 +45,7 @@ int	valid_args(int ac, char **av)
 		{
 			if (ft_isalpha(av[x][y]) || ft_atol(av[x]) <= 0)
 			{
-				ft_putendl_fd("ERROR:\nOnly positive numbers allowed.", 2);
+				error_msg(2);
 				return (-1);
 			}
 			y++;

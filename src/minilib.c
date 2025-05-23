@@ -30,9 +30,9 @@ long	ft_atol(const char *str)
 	size_t				i;
 	unsigned long long	res;
 
-	res = 0;
-	i = 0;
 	conv = 1;
+	i = 0;
+	res = 0;
 	ft_bis_atol(str, &i, &conv);
 	while (str[i] >= '0' && str[i] <= '9')
 	{
@@ -57,7 +57,7 @@ int	ft_atoi(const char *nptr)
 
 void	ft_putendl_fd(char *s, int fd)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (s[i])
@@ -70,7 +70,7 @@ void	ft_putendl_fd(char *s, int fd)
 
 int	ft_isalpha(int c)
 {
-	if ((c >= 'a' && c <= 'z' )||( c >= 'A' && c <= 'Z'))
+	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
 		return (1);
 	return (0);
 }

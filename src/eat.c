@@ -49,17 +49,11 @@ bool	set_fork(t_fork *fork)
 	return (success);
 }
 
-void	smart_sleep(long time, t_data *data)
+void	release_fork(t_fork *fork)
 {
-	long	start;
-
-	start = get_timestamp_in_ms();
-	while (!get_doomsday(data))
-	{
-		if (get_timestamp_in_ms() - start >= time)
-			break ;
-		usleep(100);
-	}
+	pthread_mutex_lock(&fork->fork);
+	fork->available = true;
+	pthread_mutex_unlock(&fork->fork);
 }
 
 void	take_fork(t_philo *philo, t_fork *fork_1, t_fork *fork_2)
@@ -75,7 +69,7 @@ void	take_fork(t_philo *philo, t_fork *fork_1, t_fork *fork_2)
 	pthread_mutex_unlock(&philo->meal_mutex);
 	print_mutex(philo, TAKEN);
 	print_mutex(philo, EAT);
-	smart_sleep(philo->data->time_to_eat, philo->data);
+	smart_usleep(philo->data->time_to_eat, philo->data);
 	release_fork(fork_2);
 	release_fork(fork_1);
 }
