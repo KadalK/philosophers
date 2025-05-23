@@ -1,3 +1,6 @@
+.repomixignore
+*.txt
+*.idea
 # Prerequisites
 *.d
 
