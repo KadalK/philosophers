@@ -6,11 +6,11 @@
 /*   By: kapinarc <kapinarc@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 17:35:17 by kapinarc          #+#    #+#             */
-/*   Updated: 2025/04/29 17:35:17 by kapinarc         ###   ########.fr       */
+/*   Updated: 2025/05/27 17:55:23 by kapinarc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/philo.h"
+#include "philo.h"
 
 static void	args_init(t_data *data, char **av)
 {
@@ -33,10 +33,10 @@ static	bool	data_init(t_data *data)
 	data->start_time = get_timestamp_in_ms();
 	data->forks = malloc(sizeof(t_fork) * data->nb_philo);
 	if (!data->forks)
-		return (false);
+		return (free_init(data), false);
 	data->philos = malloc(sizeof(t_philo) * data->nb_philo);
 	if (!data->philos)
-		return (false);
+		return (free_init(data), false);
 	while (i < data->nb_philo)
 	{
 		data->philos[i].id = i + 1;
@@ -72,7 +72,10 @@ bool	init(t_data **data, char **av)
 {
 	*data = malloc(sizeof(t_data));
 	if (!*data)
+	{
+		free_init(*data);
 		return (false);
+	}
 	memset(*data, 0, sizeof(t_data));
 	args_init(*data, av);
 	if (!data_init(*data))
@@ -83,9 +86,10 @@ bool	init(t_data **data, char **av)
 
 void	free_init(t_data *data)
 {
-	if (data->forks)
+	if (data && data->forks)
 		free(data->forks);
-	if (data->philos)
+	if (data && data->philos)
 		free(data->philos);
-	free(data);
+	if (data)
+		free(data);
 }

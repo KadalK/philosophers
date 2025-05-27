@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/philo.h"
+#include "philo.h"
 
 bool	get_doomsday(t_data *data)
 {
@@ -61,7 +61,10 @@ bool	thread_creator(t_data *data)
 
 	thread = malloc(sizeof(pthread_t) * data->nb_philo);
 	if (!thread)
+	{
+		free_init(data);
 		return (false);
+	}
 	if (!thread_creat_n_join(data, thread))
 	{
 		free(thread);
@@ -78,9 +81,14 @@ int	main(int ac, char **av)
 	if (valid_args(ac, av) == -1)
 		return (1);
 	if (!init(&data, av))
+	{
 		return (1);
+	}
 	if (lonely_philo(data))
+	{
+		free_init(data);
 		return (0);
+	}
 	thread_creator(data);
 	free_init(data);
 	return (0);

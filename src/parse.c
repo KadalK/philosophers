@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/philo.h"
+#include "philo.h"
 
 void	error_msg(int mode)
 {
@@ -21,13 +21,9 @@ void	error_msg(int mode)
 			"[number_of_times_each_philosopher_must_eat]", 2);
 	}
 	else if (mode == 1)
-	{
 		ft_putendl_fd("ERROR:\nWrong arguments.", 2);
-	}
 	else if (mode == 2)
-	{
 		ft_putendl_fd("ERROR:\nDo not set the value too high.", 2);
-	}
 }
 
 int	usage_arg(int ac)
@@ -35,16 +31,6 @@ int	usage_arg(int ac)
 	if (ac < 5 || ac > 6)
 	{
 		error_msg(0);
-		return (-1);
-	}
-	return (0);
-}
-
-int	wrong_arg(char *x)
-{
-	if (ft_strlen(x) == 0)
-	{
-		error_msg(1);
 		return (-1);
 	}
 	return (0);
@@ -74,6 +60,17 @@ int	all_longs_valid(char **av)
 	return (0);
 }
 
+int	wrong_arg(char *x, char y)
+{
+	if (ft_strlen(x) == 0 || !ft_isdigit(y)
+		|| !ft_strncmp(x, "0", ft_strlen(x)))
+	{
+		error_msg(1);
+		return (-1);
+	}
+	return (0);
+}
+
 int	valid_args(int ac, char **av)
 {
 	int	x;
@@ -87,14 +84,12 @@ int	valid_args(int ac, char **av)
 	while (av[x])
 	{
 		y = 0;
-		if (wrong_arg(av[x]) == -1)
+		if (wrong_arg(av[x], av[x][y]) == -1)
 			return (-1);
 		while (av[x][y])
 		{
-			if (!ft_isdigit(av[x][y]))
-			{
+			if (wrong_arg(av[x], av[x][y]) == -1)
 				return (-1);
-			}
 			y++;
 		}
 		x++;

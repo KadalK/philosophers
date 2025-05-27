@@ -45,6 +45,7 @@ typedef struct s_data
 	pthread_mutex_t	print_mutex;
 	pthread_mutex_t	sleep_mutex;
 
+	pthread_t		thread;
 	struct s_philo	*philos;
 	struct s_fork	*forks;
 }	t_data;

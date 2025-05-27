@@ -1,6 +1,6 @@
 NAME = philo
 CC = cc
-CFLAGS = -Wall -Wextra -Wextra -g3
+CFLAGS = -Wall -Wextra -Werror -g3
 
 HEAD = include/philo.h
 SRC_DIR = src/
@@ -22,7 +22,7 @@ all: $(NAME)
 $(NAME): $(OBJ_DIR) $(OBJS) $(HEAD)
 		$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_DIR)
+$(OBJ_DIR)%.o: $(SRC_DIR)%.c $(HEAD) Makefile | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -I include -c $< -o $@
 
 $(OBJ_DIR):

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/philo.h"
+#include "philo.h"
 
 static void	ft_bis_atol(const char *str, size_t *i, int *conv)
 {
