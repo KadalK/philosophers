@@ -56,13 +56,11 @@ void	think_phase(t_philo *philo)
 
 void	*routine(void *arg)
 {
-	t_philo	*philo;
-	int		must_eat;
+	t_philo		*philo;
+	int			must_eat;
 
 	philo = (t_philo *)arg;
 	must_eat = philo->data->must_eat;
-	if (philo->id % 2 == 0)
-		usleep(50);
 	think_phase(philo);
 	while (!get_doomsday(philo->data) || philo->meals_eaten < must_eat)
 	{
@@ -71,7 +69,9 @@ void	*routine(void *arg)
 		eat(philo);
 		sleep_phase(philo);
 		think_phase(philo);
-		if (philo->data->nb_philo % 2 == 1)
+		if (philo->data->nb_philo % 2 == 1
+			&& philo->data->time_to_die - philo->data->time_to_eat
+			> philo->data->time_to_eat + philo->data->time_to_sleep)
 			smart_usleep(philo->data->time_to_eat, philo->data);
 	}
 	return (NULL);

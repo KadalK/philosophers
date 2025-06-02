@@ -20,9 +20,7 @@ bool	all_philos_meal_eaten(t_data *data)
 	i = 0;
 	count = 0;
 	if (data->must_eat == -1)
-	{
 		return (false);
-	}
 	while (i < data->nb_philo)
 	{
 		pthread_mutex_lock(&data->philos[i].meal_mutex);
@@ -65,10 +63,12 @@ void	take_fork(t_philo *philo, t_fork *fork_1, t_fork *fork_2)
 		usleep(100);
 	pthread_mutex_lock(&philo->meal_mutex);
 	philo->last_meal = get_timestamp_in_ms();
-	philo->meals_eaten++;
 	pthread_mutex_unlock(&philo->meal_mutex);
 	print_mutex(philo, TAKEN);
 	print_mutex(philo, EAT);
+	pthread_mutex_lock(&philo->meal_mutex);
+	philo->meals_eaten++;
+	pthread_mutex_unlock(&philo->meal_mutex);
 	smart_usleep(philo->data->time_to_eat, philo->data);
 	release_fork(fork_2);
 	release_fork(fork_1);

@@ -54,7 +54,7 @@ typedef struct s_philo
 {
 	int				id;
 	long			last_meal;
-	int				meals_eaten;
+	long				meals_eaten;
 
 	struct s_fork	*l_fork;
 	struct s_fork	*r_fork;
@@ -85,6 +85,7 @@ void	eat(t_philo *philo);
 //----init.c----//
 bool	init(t_data **data, char **av);
 void	free_init(t_data *data);
+void	destroy_all_mutex(t_data *data);
 
 //----main.c----//
 bool	get_doomsday(t_data *data);

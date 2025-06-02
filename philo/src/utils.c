@@ -75,3 +75,18 @@ void	print_mutex(t_philo *philo, char *msg)
 		pthread_mutex_unlock(&philo->data->print_mutex);
 	}
 }
+
+void	destroy_all_mutex(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	pthread_mutex_destroy(&data->print_mutex);
+	pthread_mutex_destroy(&data->sleep_mutex);
+	pthread_mutex_destroy(&data->philos->meal_mutex);
+	while (i < data->nb_philo)
+	{
+		pthread_mutex_destroy(&data->forks[i].fork);
+		i++;
+	}
+}
