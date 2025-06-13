@@ -39,7 +39,6 @@ typedef struct s_data
 	int				must_eat;
 	bool			doomsday;
 	long			start_time;
-	bool			start;
 
 	pthread_mutex_t	doomsday_mutex;
 	pthread_mutex_t	print_mutex;
@@ -54,7 +53,7 @@ typedef struct s_philo
 {
 	int				id;
 	long			last_meal;
-	long				meals_eaten;
+	long			meals_eaten;
 
 	struct s_fork	*l_fork;
 	struct s_fork	*r_fork;

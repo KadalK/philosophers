@@ -6,7 +6,7 @@
 /*   By: kapinarc <kapinarc@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 15:03:00 by kapinarc          #+#    #+#             */
-/*   Updated: 2025/05/09 15:03:00 by kapinarc         ###   ########.fr       */
+/*   Updated: 2025/06/09 16:48:20 by kapinarc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,8 @@ void	*routine(void *arg)
 		sleep_phase(philo);
 		think_phase(philo);
 		if (philo->data->nb_philo % 2 == 1
-			&& philo->data->time_to_die - philo->data->time_to_eat
-			> philo->data->time_to_eat + philo->data->time_to_sleep)
+			&& (philo->data->time_to_die - philo->data->time_to_eat)
+			> (philo->data->time_to_eat + philo->data->time_to_sleep))
 			smart_usleep(philo->data->time_to_eat, philo->data);
 	}
 	return (NULL);
